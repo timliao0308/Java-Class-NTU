@@ -1,0 +1,11 @@
+import java.lang.Thread;
+
+public class CurrentThread { 
+	
+	public static void main(String[] args){
+		Thread t = Thread.currentThread(); 
+		System.out.println("目前的執行緒的名稱為：" + t.getName());
+		t.setName("The Main Thread"); 
+		System.out.println("更名後的執行緒的名稱為：" + t.getName());
+	}
+}
