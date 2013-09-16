@@ -1,0 +1,53 @@
+package ch9;
+
+class Thread8B implements Runnable {
+	String name; // 設定執行緒的名稱
+	Thread t;
+
+	Thread8B(String name) {
+		this.name = name;
+		t = new Thread(this, name);
+		t.start();
+		try {
+			t.join();
+		} catch (InterruptedException e) {
+			System.out.println(e.toString());
+		}
+	}
+
+	public void run() {
+		for (int i = 0; i < 100000; i++) {
+		}
+		System.out.println(name + "執行完畢");
+	}
+}
+
+class Thread8A implements Runnable {
+	String name; // 設定執行緒的名稱
+	Thread t;
+
+	Thread8A(String name) {
+		this.name = name;
+		t = new Thread(this);
+		t.start();
+		try {
+			t.join();
+		} catch (InterruptedException e) {
+			System.out.println(e.toString());
+		}
+	}
+
+	public void run() {
+		for (int i = 0; i < 1000; i++) {
+		}
+		new Thread8B("子執行緒B");
+		System.out.println(name + "執行完畢");
+	}
+}
+
+public class Thread8 {
+	public static void main(String[] args) {
+		new Thread8A("父執行緒A");
+		System.out.println("主程式執行完畢");
+	}
+}
