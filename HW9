@@ -1,0 +1,83 @@
+package ch9;
+
+public class HW9 {
+	public static void main(String[] args) {
+		BankMoney bm = new BankMoney();
+		new Deposit(bm);
+		new WithDraw(bm);
+	}
+}
+
+class BankMoney {
+	private int money = 0;
+	boolean getMoney = false;
+
+	synchronized int getMoney() {
+		if (!getMoney) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+		}
+		money -= 100;	//100 each time
+		if (money < 0)
+			getMoney = false;
+		System.out.println("取出後：" + money);
+		notify();
+		return money;
+	}
+
+	synchronized void setMoney() {
+		if (getMoney) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+		}
+		money += 1000;	//1000	each time
+		if (money > 0)
+			getMoney = true;
+		System.out.println("增加後：" + money);
+		notify();
+	}
+}
+
+class Deposit implements Runnable {
+	BankMoney bm;
+	
+	Deposit(BankMoney bm) {
+		this.bm = bm;
+		Thread t = new Thread(this);
+		t.start();
+	}
+	
+	public void run() {
+		while (true) {
+			bm.setMoney();
+			try {
+				Thread.sleep((int) (Math.random() * 1000) * 5);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+}
+
+class WithDraw implements Runnable {
+	BankMoney bm;
+
+	WithDraw(BankMoney bm) {
+		this.bm = bm;
+		Thread t = new Thread(this);
+		t.start();
+	}
+
+	public void run() {
+		while (true) {
+			bm.getMoney();
+			try {
+				Thread.sleep((int) (Math.random() * 1000) * 5);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+}
