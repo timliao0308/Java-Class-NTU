@@ -1,0 +1,81 @@
+package ch9;
+
+public class PC2 {
+	public static void main(String[] args) {
+		UseData2 uc = new UseData2();
+		new Producer2(uc);
+		new Consumer2(uc);
+	}
+}
+
+class UseData2 {
+	private int data;
+	boolean flag = false;
+
+	synchronized int getData() {
+		if (!flag) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+		}
+		data--;
+		flag = false;
+		System.out.println("取出後：" + data);
+		notify();
+		return data;
+	}
+
+	synchronized void setData() {
+		if (flag) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+			}
+		}
+		data++;
+		flag = true;
+		System.out.println("增加後：" + data);
+		notify();
+	}
+}
+
+class Consumer2 implements Runnable {
+	UseData2 UC;
+
+	Consumer2(UseData2 UC) {
+		this.UC = UC;
+		Thread t = new Thread(this);
+		t.start();
+	}
+
+	public void run() {
+		while (true) {
+			UC.getData();
+			try {
+				Thread.sleep((int) (Math.random() * 1000) * 5);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+}
+
+class Producer2 implements Runnable {
+	UseData2 UC;
+
+	Producer2(UseData2 UC) {
+		this.UC = UC;
+		Thread t = new Thread(this);
+		t.start();
+	}
+
+	public void run() {
+		while (true) {
+			UC.setData();
+			try {
+				Thread.sleep((int) (Math.random() * 1000) * 5);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+}
